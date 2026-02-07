@@ -76,6 +76,8 @@ The system automates the entire supply chain workflow:
     ```
 3.  Access the site: `http://localhost/AFinal/`
 
+4.  Site Repo link <a href="https://github.com/NimnaOfficial/LankaWashing">Click Here</a>
+
 ### 3️⃣ Java Desktop App Setup
 1.  Open the project in **IntelliJ IDEA** or **NetBeans**.
 2.  **Add Dependencies:** Ensure the following JARs are in your library path:
@@ -92,7 +94,7 @@ The system automates the entire supply chain workflow:
 
 | **Supplier Dashboard** | **Java Inventory Panel** |
 |:---:|:---:|
-| ![Supplier Dash](https://via.placeholder.com/400x200?text=Web+Dashboard+Preview) | ![Java App](https://via.placeholder.com/400x200?text=Java+App+Preview) |
+| ![Supplier Dash](https://i.ibb.co/gbNnPt51/Screenshot-2026-02-07-211018.png) | ![Java App](https://i.ibb.co/9mGHVdbz/Screenshot-2026-02-07-213656.png) |
 | *Real-time stats and invoice uploads* | *Stock tracking and resource management* |
 
 ---
@@ -114,7 +116,7 @@ The system automates the entire supply chain workflow:
 ## 👨‍💻 Contributors
 * **NimnaOfficial** - *Developer (Full Stack)*
 * **imaam07**       - *Lead Developer (Full Stack)*
-* **Malith** - *Developer (Full Stack)*
+* **malith-pasindu** - *Developer (Full Stack)*
 
 ---
 
