@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="opencensus-api-0.31.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../opencen/opencensus-api-0.31.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../opencen/opencensus-contrib-http-util-0.31.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
