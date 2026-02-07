@@ -94,7 +94,7 @@ The system automates the entire supply chain workflow:
 
 | **Supplier Dashboard** | **Java Inventory Panel** |
 |:---:|:---:|
-| ![Supplier Dash](https://i.ibb.co/gbNnPt51/Screenshot-2026-02-07-211018.png) | ![Java App](https://i.ibb.co/9mGHVdbz/Screenshot-2026-02-07-213656.png) |
+| ![Supplier Dash](https://i.ibb.co/gbNnPt51/Screenshot-2026-02-07-211018.png) | ![Java App](https://i.ibb.co/DgVcF6t5/Screenshot-2026-02-07-214121.png) |
 | *Real-time stats and invoice uploads* | *Stock tracking and resource management* |
 
 ---
