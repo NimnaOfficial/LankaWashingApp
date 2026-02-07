@@ -74,7 +74,7 @@ The system automates the entire supply chain workflow:
     $user = 'root';
     $pass = ''; // Default XAMPP password
     ```
-3.  Access the site: `http://localhost/AFinal/`
+3.  Access the site: `http://localhost/addfolder/`
 
 4.  Site Repo link <a href="https://github.com/NimnaOfficial/LankaWashing">Click Here</a>
 
