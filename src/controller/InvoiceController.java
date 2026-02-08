@@ -15,22 +15,25 @@ public class InvoiceController {
 
     public void loadInvoices(DefaultTableModel model) {
         model.setRowCount(0);
-        // Added total_amount to the SELECT query
-        String sql = "SELECT id, po_reference, invoice_number, invoice_date, totvani@tech.comal_amount, status, file_link FROM invoices ORDER BY created_at DESC";
+
+        // ✅ FIXED: Added 'po_reference' to the SELECT statement
+        String sql = "SELECT id, supplier_id, po_reference, invoice_number, invoice_date, total_amount, status, file_link FROM invoices ORDER BY created_at DESC";
 
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 model.addRow(new Object[]{
-                        rs.getInt("id"),                // 0: ID
-                        rs.getString("po_reference"),   // 1: PO Ref
-                        rs.getString("invoice_number"), // 2: Invoice #
-                        rs.getDate("invoice_date"),     // 3: Date
-                        rs.getDouble("total_amount"),   // 4: ✅ Added Amount back
-                        rs.getString("status"),         // 5: Status
-                        rs.getString("file_link")       // 6: Link
+                        rs.getInt("id"),
+                        rs.getString("po_reference"),   // Now this will work!
+                        rs.getString("invoice_number"),
+                        rs.getDate("invoice_date"),
+                        rs.getDouble("total_amount"),
+                        rs.getString("status"),
+                        rs.getString("file_link")
                 });
             }
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean updateStatus(int id, String newStatus) {

@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="FINAL_PROJECT:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/FINAL_PROJECT_jar</output-path>
+  <artifact type="jar" name="FINAL_PROJECT:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/FINAL_PROJECT_jar2</output-path>
     <root id="archive" name="FINAL_PROJECT.jar">
       <element id="module-output" name="FINAL_PROJECT" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../plugins/commons-beanutils-1.9.4.jar" path-in-jar="/" />

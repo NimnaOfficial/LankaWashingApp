@@ -22,7 +22,7 @@ public class UserController {
     // 1. ADD USER (With Automatic Technician Profile Creation)
     // =========================================================================
     public boolean addUser(String name, String email, String phone, String password, int roleId, String status) {
-        String sqlUser = "INSERT INTO User (name, email, phone, password, roleId, status) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlUser = "INSERT INTO user (name, email, phone, password, roleId, status) VALUES (?, ?, ?, ?, ?, ?)";
 
         try {
             // [A] Start Transaction: Turn off auto-save
@@ -43,7 +43,7 @@ public class UserController {
                 if (roleId == 6) {
                     // Check if profile already exists to prevent duplicates
                     if (!checkTechnicianExists(name)) {
-                        String sqlTech = "INSERT INTO Technician (name, availabilityStatus) VALUES (?, 'Available')";
+                        String sqlTech = "INSERT INTO technician (name, availabilityStatus) VALUES (?, 'Available')";
                         PreparedStatement pstTech = conn.prepareStatement(sqlTech);
                         pstTech.setString(1, name);
                         pstTech.executeUpdate();
@@ -93,7 +93,7 @@ public class UserController {
     // =========================================================================
     public boolean updateUser(int id, String name, String email, String phone, int roleId, String status) {
         // Note: Password is NOT updated here to prevent accidental resets.
-        String sql = "UPDATE User SET name=?, email=?, phone=?, roleId=?, status=? WHERE userId=?";
+        String sql = "UPDATE user SET name=?, email=?, phone=?, roleId=?, status=? WHERE userId=?";
         try {
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, name);

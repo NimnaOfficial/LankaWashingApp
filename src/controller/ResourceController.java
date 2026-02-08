@@ -20,7 +20,7 @@ public class ResourceController {
 
     public HashMap<String, Integer> getSupplierMap() {
         HashMap<String, Integer> map = new HashMap<>();
-        String sql = "SELECT supplierId, company FROM Supplier";
+        String sql = "SELECT supplierId, company FROM supplier";
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -32,7 +32,7 @@ public class ResourceController {
     }
 
     public boolean addResource(String name, String category, String unit, double minLevel, int supplierId, double unitPrice) {
-        String sql = "INSERT INTO Resource (resourceName, category, unit, currentQty, minLevel, supplierId, unitPrice) VALUES (?, ?, ?, 0.0, ?, ?, ?)";
+        String sql = "INSERT INTO resource (resourceName, category, unit, currentQty, minLevel, supplierId, unitPrice) VALUES (?, ?, ?, 0.0, ?, ?, ?)";
         try {
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, name);
@@ -49,7 +49,7 @@ public class ResourceController {
     }
 
     public boolean updateResource(int id, String name, String category, String unit, double minLevel, int supplierId, double unitPrice) {
-        String sql = "UPDATE Resource SET resourceName=?, category=?, unit=?, minLevel=?, supplierId=?, unitPrice=? WHERE resourceId=?";
+        String sql = "UPDATE resource SET resourceName=?, category=?, unit=?, minLevel=?, supplierId=?, unitPrice=? WHERE resourceId=?";
         try {
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, name);
@@ -67,7 +67,7 @@ public class ResourceController {
     }
 
     public boolean deleteResource(int id) {
-        String sql = "DELETE FROM Resource WHERE resourceId=?";
+        String sql = "DELETE FROM resource WHERE resourceId=?";
         try {
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, id);
@@ -86,7 +86,7 @@ public class ResourceController {
         String sql = "SELECT r.resourceId, r.resourceName, r.category, r.unit, " +
                 "COALESCE(r.currentQty, 0.0) as currentQty, r.minLevel, " +
                 "COALESCE(r.unitPrice, 0.0) as unitPrice, s.company " +
-                "FROM Resource r LEFT JOIN Supplier s ON r.supplierId = s.supplierId";
+                "FROM resource r LEFT JOIN supplier s ON r.supplierId = s.supplierId";
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);

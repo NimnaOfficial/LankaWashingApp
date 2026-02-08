@@ -24,7 +24,7 @@ public class SupplierController {
     public boolean addSupplier(String company, String name, String phone, String email) {
         // 1. Fixed SQL: We hard-code default/empty values for the required Bank/Remarks columns
         //    bankName='', accountNo=0, branch='', remarks='Pending'
-        String sql = "INSERT INTO supplier (company, name, phone, email, bankName, accountNo, branch, remarks, password) " +
+        String sql = "INSERT INTO Supplier (company, name, phone, email, bankName, accountNo, branch, remarks, password) " +
                 "VALUES (?, ?, ?, ?, '', 0, '', 'Pending', '123')";
 
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
