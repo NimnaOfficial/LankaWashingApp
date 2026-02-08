@@ -55,7 +55,7 @@ public class InventoryReportController {
             JasperPrint jp = JasperFillManager.fillReport(jr, params, conn);
 
             // 2. Define output folder and filename
-            String outputDir = "C:\\reports\\";
+            String outputDir = "C:\\reports\\Inventory\\";
             new File(outputDir).mkdirs(); // create folder if it doesn't exist
 
             // Add timestamp to filename to avoid overwriting

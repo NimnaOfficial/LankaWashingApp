@@ -68,7 +68,7 @@ public class ReportController {
             JasperPrint jp = JasperFillManager.fillReport(jr, params, conn);
 
             // 4. Output to C:\reports\
-            String outputDir = "C:\\reports\\";
+            String outputDir = "C:\\reports\\Admin\\";
             new File(outputDir).mkdirs();
 
             String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());

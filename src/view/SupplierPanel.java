@@ -148,7 +148,7 @@ public class SupplierPanel extends JPanel {
                     txtPhone.getText(),
                     txtEmail.getText())) {
 
-                JOptionPane.showMessageDialog(this, "Supplier Registered Successfully! Defualt password is 'supplier123'. Please ask them to change it after first login.");
+                JOptionPane.showMessageDialog(this, "Supplier Registered Successfully! Defualt password is '123'. Please ask them to change it after first login.");
                 refreshTable();
                 clearForm();
             }

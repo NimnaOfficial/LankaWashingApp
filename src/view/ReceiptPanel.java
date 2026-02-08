@@ -5,7 +5,9 @@ import controller.ReceiptController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -49,62 +51,84 @@ public class ReceiptPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 15, 10, 15);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
 
-        // Row 1: Stock Combo
-        gbc.gridx=0; gbc.gridy=0; panel.add(new JLabel("Select Stock In Transaction:"), gbc);
+        // --- Row 1 ---
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.2;
+        panel.add(new JLabel("Select Stock In Transaction:"), gbc);
+
         cmbStock = new JComboBox<>();
         cmbStock.setPreferredSize(new Dimension(250, 30));
         cmbStock.addActionListener(e -> autoFillCost());
-        gbc.gridx=1; panel.add(cmbStock, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.8;
+        panel.add(cmbStock, gbc);
 
-        // Receipt Ref (Auto)
-        gbc.gridx=2; panel.add(new JLabel("Receipt Ref (Auto):"), gbc);
+        gbc.gridx = 2; gbc.weightx = 0.2;
+        panel.add(new JLabel("Receipt Ref (Auto):"), gbc);
+
         txtRef = new JTextField();
         txtRef.setEditable(false);
         txtRef.setBackground(new Color(240, 240, 240));
-        gbc.gridx=3; panel.add(txtRef, gbc);
+        txtRef.setPreferredSize(new Dimension(150, 30));
+        gbc.gridx = 3; gbc.weightx = 0.8;
+        panel.add(txtRef, gbc);
 
-        // Row 2: Cost (Auto)
-        gbc.gridx=0; gbc.gridy=1; panel.add(new JLabel("Total Cost ($):"), gbc);
+        // --- Row 2 ---
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.2;
+        panel.add(new JLabel("Total Cost ($):"), gbc);
+
         txtCost = new JTextField();
         txtCost.setEditable(false);
         txtCost.setBackground(new Color(245, 255, 245));
-        gbc.gridx=1; panel.add(txtCost, gbc);
+        txtCost.setPreferredSize(new Dimension(250, 30));
+        gbc.gridx = 1; gbc.weightx = 0.8;
+        panel.add(txtCost, gbc);
 
-        // Date Chooser
-        gbc.gridx=2; panel.add(new JLabel("Receipt Date:"), gbc);
+        gbc.gridx = 2; gbc.weightx = 0.2;
+        panel.add(new JLabel("Receipt Date:"), gbc);
+
         dateChooser = new JDateChooser();
         dateChooser.setDate(new Date());
-        gbc.gridx=3; panel.add(dateChooser, gbc);
+        dateChooser.setPreferredSize(new Dimension(150, 30));
+        gbc.gridx = 3; gbc.weightx = 0.8;
+        panel.add(dateChooser, gbc);
 
-        // Row 3: File Upload
-        gbc.gridx=0; gbc.gridy=2; panel.add(new JLabel("Attach Receipt (PDF/Img):"), gbc);
+        // --- Row 3 ---
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.2;
+        panel.add(new JLabel("Attach Receipt (PDF/Img):"), gbc);
+
         JPanel filePanel = new JPanel(new BorderLayout(5, 0));
         filePanel.setBackground(Color.WHITE);
+
         txtFilePath = new JTextField();
         txtFilePath.setEditable(false);
+        txtFilePath.setPreferredSize(new Dimension(200, 30));
+
         btnUpload = new JButton("📂 Browse");
         btnUpload.addActionListener(e -> chooseFile());
+
         filePanel.add(txtFilePath, BorderLayout.CENTER);
         filePanel.add(btnUpload, BorderLayout.EAST);
-        gbc.gridx=1; gbc.gridwidth=2; panel.add(filePanel, gbc);
 
-        // Send Button
+        gbc.gridx = 1; gbc.gridwidth = 2; gbc.weightx = 1.0;
+        panel.add(filePanel, gbc);
+
         btnSend = new JButton("🚀 Upload & Send");
         btnSend.setBackground(new Color(46, 204, 113));
-        btnSend.setForeground(Color.black);
+        btnSend.setForeground(Color.white);
         btnSend.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnSend.setFocusPainted(false);
         btnSend.addActionListener(e -> sendReceipt());
-        gbc.gridx=3; gbc.gridwidth=1; panel.add(btnSend, gbc);
+
+        gbc.gridx = 3; gbc.gridwidth = 1; gbc.weightx = 0.8;
+        panel.add(btnSend, gbc);
 
         return panel;
     }
 
     private JPanel createTablePanel() {
-        // Standard Columns
         String[] cols = {"Reference", "Stock Details", "Date", "Amount ($)", "Drive Link"};
 
-        // Standard Model (No Button Logic)
         model = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -113,15 +137,14 @@ public class ReceiptPanel extends JPanel {
         table.setRowHeight(28);
         table.getTableHeader().setBackground(new Color(50, 50, 50));
         table.getTableHeader().setForeground(Color.WHITE);
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
 
         return new JPanel(new BorderLayout()) {{ add(new JScrollPane(table)); }};
     }
 
-    // --- LOGIC ---
-
     private void loadData() {
         txtRef.setText(controller.generateRef());
-        stockDataMap = controller.getStockTransactions(); // Refresh the map from DB
+        stockDataMap = controller.getStockTransactions();
 
         cmbStock.removeAllItems();
         cmbStock.addItem("-- Select Transaction --");
@@ -142,36 +165,50 @@ public class ReceiptPanel extends JPanel {
         if(stockDataMap != null && stockDataMap.containsKey(label)) {
             String[] data = stockDataMap.get(label);
             if(data != null) {
-                txtCost.setText(data[1]);
+                try {
+                    double val = Double.parseDouble(data[1]);
+                    txtCost.setText(String.format("%.2f", val));
+                } catch (Exception e) {
+                    txtCost.setText(data[1]);
+                }
             }
         }
     }
 
+    // 🔥 PRO FIX: Use PowerShell to open the REAL Windows File Picker
+    // No Swing, No AWT, No Crashes. Pure Windows Native.
     private void chooseFile() {
-        // Use JFileChooser (Swing) instead of FileDialog (Native)
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        // This command runs a tiny script to open the file dialog and print the path
+        String command = "powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; " +
+                "$d = New-Object System.Windows.Forms.OpenFileDialog; " +
+                "$d.Filter = 'Files|*.jpg;*.jpeg;*.png;*.pdf'; " +
+                "$d.Title = 'Select Receipt'; " +
+                "if($d.ShowDialog() -eq 'OK'){Write-Host $d.FileName}\"";
 
-                JFileChooser chooser = new JFileChooser();
-                chooser.setDialogTitle("Select Receipt File");
-                chooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-                chooser.setAcceptAllFileFilterUsed(false);
-                chooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Images & PDF", "jpg", "png", "pdf", "jpeg"));
+        try {
+            // Run the command
+            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", command);
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
 
-                Component parent = SwingUtilities.getWindowAncestor(this);
-                int result = chooser.showOpenDialog(parent);
+            // Read the output (the file path)
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = reader.readLine();
 
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    selectedFile = chooser.getSelectedFile();
+            if (line != null && !line.trim().isEmpty()) {
+                File f = new File(line.trim());
+                if(f.exists()) {
+                    selectedFile = f;
                     txtFilePath.setText(selectedFile.getName());
-                    System.out.println("✅ File selected successfully: " + selectedFile.getAbsolutePath());
+                    System.out.println("✅ File selected: " + selectedFile.getAbsolutePath());
                 }
-            } catch (Exception e) {
-                System.err.println("❌ FileChooser Error: " + e.getMessage());
-                JOptionPane.showMessageDialog(this, "Error opening file browser: " + e.getMessage());
             }
-        });
+            process.waitFor();
+
+        } catch (Exception e) {
+            // Fallback just in case powershell is blocked
+            JOptionPane.showMessageDialog(this, "Could not open file picker: " + e.getMessage());
+        }
     }
 
     private void sendReceipt() {
@@ -182,12 +219,25 @@ public class ReceiptPanel extends JPanel {
 
         String label = (String) cmbStock.getSelectedItem();
         String[] data = stockDataMap.get(label);
+
+        if (data == null) {
+            JOptionPane.showMessageDialog(this, "Error: Invalid stock selection.");
+            return;
+        }
+
         int transId = Integer.parseInt(data[0]);
-        double cost = Double.parseDouble(txtCost.getText());
+        double cost = 0;
+        try {
+            cost = Double.parseDouble(txtCost.getText());
+        } catch (NumberFormatException e) {
+            cost = 0;
+        }
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         btnSend.setEnabled(false);
         btnSend.setText("Uploading...");
+
+        final double finalCost = cost;
 
         new Thread(() -> {
             boolean success = controller.processReceipt(
@@ -195,7 +245,7 @@ public class ReceiptPanel extends JPanel {
                     transId,
                     label,
                     dateChooser.getDate(),
-                    cost,
+                    finalCost,
                     selectedFile
             );
 
@@ -205,16 +255,13 @@ public class ReceiptPanel extends JPanel {
                 btnSend.setText("🚀 Upload & Send");
 
                 if(success) {
-                    JOptionPane.showMessageDialog(this, "Receipt Sent & Uploaded Successfully!");
-
-                    // Clear inputs
+                    JOptionPane.showMessageDialog(ReceiptPanel.this, "Receipt Sent & Uploaded Successfully!");
                     txtFilePath.setText("");
                     selectedFile = null;
-
-                    // REFRESH DATA (Reloads Combo Box & Table)
+                    dateChooser.setDate(new Date());
                     loadData();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Error uploading or saving receipt.");
+                    JOptionPane.showMessageDialog(ReceiptPanel.this, "Error uploading or saving receipt.");
                 }
             });
         }).start();

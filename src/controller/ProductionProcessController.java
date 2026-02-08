@@ -26,7 +26,57 @@ public class ProductionProcessController {
         return map;
     }
 
-    // --- 2. SPECIFIC RESOURCE LOADERS ---
+    // --- 2. GET BATCH INSTRUCTIONS (NOW WITH CUSTOMER NOTES) ---
+    public String getBatchDetails(int batchId) {
+        StringBuilder sb = new StringBuilder();
+
+        // 🚀 SMART QUERY UPDATE:
+        // 1. Gets Batch Info
+        // 2. Joins 'orders' and 'customerrequest' to find the original Description (Note)
+        String sql = "SELECT p.productName, p.startDate, p.status, oi.quantity, cr.description " +
+                "FROM ProductionBatchRecord p " +
+                "LEFT JOIN orderitem oi ON p.orderId = oi.orderId " +
+                "LEFT JOIN orders o ON p.orderId = o.orderId " +
+                "LEFT JOIN customerrequest cr ON o.requestId = cr.requestId " +
+                "WHERE p.batchId = ? LIMIT 1";
+
+        try {
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, batchId);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                sb.append("📌 Product: ").append(rs.getString("productName")).append("\n");
+
+                // Handle Quantity
+                double qty = rs.getDouble("quantity");
+                if (qty > 0) {
+                    sb.append("🔢 Target Qty: ").append((int)qty).append(" Units\n");
+                } else {
+                    sb.append("🔢 Target Qty: N/A (Manual Batch)\n");
+                }
+
+                // ✅ NEW: ADDED CUSTOMER NOTE
+                String note = rs.getString("description");
+                if (note != null && !note.isEmpty()) {
+                    sb.append("📝 Customer Note: ").append(note).append("\n");
+                } else {
+                    sb.append("📝 Customer Note: -\n");
+                }
+
+                sb.append("📅 Start Date: ").append(rs.getDate("startDate")).append("\n");
+                sb.append("⚡ Status: ").append(rs.getString("status"));
+            } else {
+                return "⚠️ Batch Info Not Found";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "⚠️ Database Error: " + e.getMessage();
+        }
+        return sb.toString();
+    }
+
+    // --- 3. SPECIFIC RESOURCE LOADERS ---
     public HashMap<String, Integer> getDyeingResources() {
         return getResourcesByQuery("SELECT resourceId, resourceName FROM Resource WHERE category = 'Chemical'");
     }
@@ -48,7 +98,7 @@ public class ProductionProcessController {
         return map;
     }
 
-    // --- 3. SAVE PROCESS LOGIC ---
+    // --- 4. SAVE PROCESS LOGIC ---
     private boolean saveGenericProcess(String table, String colQty, String colType, int batchId, int resId, double qty, String typeVal, String duration) {
         try {
             conn.setAutoCommit(false);
@@ -70,16 +120,6 @@ public class ProductionProcessController {
                 return false;
             }
 
-            if (price <= 0) {
-                int confirm = JOptionPane.showConfirmDialog(null,
-                        "⚠️ Warning: The Unit Price for '" + resName + "' is 0.00.\nThe calculated cost will be 0.\nContinue?",
-                        "Zero Price Warning", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.NO_OPTION) {
-                    conn.rollback();
-                    return false;
-                }
-            }
-
             double cost = qty * price;
 
             // C. Insert Record
@@ -88,7 +128,6 @@ public class ProductionProcessController {
             pstLog.setInt(1, batchId);
             pstLog.setInt(2, resId);
             pstLog.setDouble(3, qty);
-            // FIX: MySQL JDBC will allow setting a numeric string into a Double column
             pstLog.setString(4, typeVal);
             pstLog.setString(5, duration);
             pstLog.setDouble(6, cost);
@@ -115,8 +154,6 @@ public class ProductionProcessController {
     }
 
     public boolean saveWashProcess(int batchId, int resId, double level, String duration) {
-        // ✅ FIXED: Changed "Normal" to "40" (a valid number for waterTemp)
-        // Since the database column `waterTemp` is a DOUBLE, it rejects text like "Normal".
         return saveGenericProcess("WashingProcess", "waterLevel", "waterTemp", batchId, resId, level, "40", duration);
     }
 
@@ -124,7 +161,7 @@ public class ProductionProcessController {
         return saveGenericProcess("DryingProcess", "woodUsage", "dryingType", batchId, resId, wood, type, duration);
     }
 
-    // --- 4. MONITORING ---
+    // --- 5. MONITORING ---
     public void loadProcessHistory(DefaultTableModel model, String filter) {
         model.setRowCount(0);
         try {

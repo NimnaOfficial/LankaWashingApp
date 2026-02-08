@@ -46,7 +46,7 @@ public class ReceiptController {
                         "FROM purchaseorderitem poi " +
                         "JOIN purchaseorder po ON poi.purchaseOrderId = po.purchaseOrderId " +
                         "WHERE po.status = 'Accepted' " +
-                        // Ensure we haven't already processed this specific PO Item (Optional check, but good for safety)
+                        // Ensure we haven't already processed this specific PO Item
                         "AND NOT EXISTS (SELECT 1 FROM stock_transaction st2 WHERE st2.quantity = poi.quantity AND st2.transactionDate = po.orderDate)";
 
         try {
@@ -59,7 +59,6 @@ public class ReceiptController {
                 double cost = rs.getDouble("totalCost");
                 String source = rs.getString("source");
 
-                // Label shows source so you know which is which
                 String label = String.format("[%s] %s | Qty: %.1f", source, name, qty);
 
                 // Store ID and Cost. (Negative ID tells processReceipt it's a Web Order)
@@ -92,7 +91,7 @@ public class ReceiptController {
         }
     }
 
-    // 3. PROCESS RECEIPT (NOW HANDLES WEB ORDERS)
+    // 3. PROCESS RECEIPT (HANDLES WEB ORDERS & UPDATES STOCK)
     public boolean processReceipt(String ref, int transId, String details, java.util.Date date, double cost, File file) {
         String driveLink = "No File Uploaded";
 
@@ -133,7 +132,8 @@ public class ReceiptController {
         }
     }
 
-    // 🚀 NEW HELPER: Converts Web Order -> Stock Transaction
+
+    // 🚀 FIXED: Converts Web Order -> Stock Transaction AND Updates Stock Qty (Handles NULLs)
     private int convertPOToStockTransaction(int poItemId) {
         try {
             // 1. Get PO Item Details
@@ -156,14 +156,22 @@ public class ReceiptController {
             if (!rsRes.next()) return -1; // Resource mismatch
             int resourceId = rsRes.getInt("resourceId");
 
-            // 3. Insert into Stock Transaction
+            // 3. Insert into Stock Transaction (Log History)
             String sqlInsert = "INSERT INTO stock_transaction (resourceId, transactionType, quantity, status, transactionDate) VALUES (?, 'IN', ?, 'Completed', NOW())";
             PreparedStatement pstIns = conn.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
             pstIns.setInt(1, resourceId);
             pstIns.setDouble(2, qty);
             pstIns.executeUpdate();
 
-            // 4. Return the NEW Transaction ID
+            // 4. ✅ CRITICAL FIX: Use COALESCE to handle NULL quantities
+            // If currentQty is NULL, treat it as 0
+            String sqlUpdateStock = "UPDATE resource SET currentQty = COALESCE(currentQty, 0) + ? WHERE resourceId = ?";
+            PreparedStatement pstUpd = conn.prepareStatement(sqlUpdateStock);
+            pstUpd.setDouble(1, qty);
+            pstUpd.setInt(2, resourceId);
+            pstUpd.executeUpdate();
+
+            // 5. Return the NEW Transaction ID
             ResultSet keys = pstIns.getGeneratedKeys();
             if (keys.next()) return keys.getInt(1);
 
