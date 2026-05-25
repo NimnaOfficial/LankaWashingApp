@@ -116,7 +116,6 @@ The system automates the entire supply chain workflow:
 ## 👨‍💻 Contributors
 * **NimnaOfficial** - *Developer (Full Stack)*
 * **imaam07**       - *Lead Developer (Full Stack)*
-* **malith-pasindu** - *Developer (Full Stack)*
 
 ---
 
