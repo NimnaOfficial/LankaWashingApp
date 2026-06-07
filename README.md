@@ -9,14 +9,11 @@
 
 This is a **Hybrid Enterprise Resource Planning (ERP) System** designed for **Washing Unit (Pvt) Ltd**. It seamlessly integrates a **Java Desktop Application** for internal operations (Inventory & Finance) with a **PHP Web Portal** for external stakeholders (Suppliers & Customers).
 
-The system automates the entire supply chain workflow:
-1.  **Suppliers** receive Purchase Orders (POs) and upload invoices via the Web Portal.
-2.  **Internal Staff** manage stock, approve payments, and track usage via the Java Desktop App.
-3.  **Customers** place service orders and track status via the Customer Web Dashboard.
+
 
 ---
 
-
+## 🏗️ Technology Stack
 
 ### **Desktop Application (Internal Admin)**
 * **Language:** Java (JDK 21)
