@@ -1,4 +1,4 @@
-
+# 🧺 Washing Unit (Pvt) Ltd - Enterprise Management System
 
 ![Project Status](https://img.shields.io/badge/Status-Active-success)
 ![Java](https://img.shields.io/badge/Java-21-orange)
@@ -16,7 +16,7 @@ The system automates the entire supply chain workflow:
 
 ---
 
-## 🏗️ Technology Stack
+
 
 ### **Desktop Application (Internal Admin)**
 * **Language:** Java (JDK 21)
